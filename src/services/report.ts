@@ -5,6 +5,7 @@ import { buildAnalyticsSnapshot, SCORE_DIMENSIONS } from './analytics'
 export function generateMarkdownReport(
   workspace: EvaluationBundle,
   generatedAt = new Date().toISOString(),
+  inputSource = workspace.meta.dataset_name,
 ): string {
   const analytics = buildAnalyticsSnapshot(workspace)
   const score = (value: number | null) => value === null ? 'N/A' : value.toFixed(2)
@@ -13,6 +14,7 @@ export function generateMarkdownReport(
     '',
     `- Generation timestamp: ${generatedAt}`,
     `- Schema version: ${workspace.meta.schema_version}`,
+    `- Input source: ${inputSource}`,
     `- Completed-review coverage: ${analytics.coverage.completedSlots} / ${analytics.coverage.totalSlots} (${(analytics.coverage.rate * 100).toFixed(2)}%)`,
     '',
     '> Only completed reviews contribute to ranking and analytics.',

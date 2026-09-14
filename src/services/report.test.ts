@@ -11,6 +11,7 @@ describe('Markdown report', () => {
 
     expect(report).toContain('Generation timestamp: 2026-09-14T12:00:00.000Z')
     expect(report).toContain('Schema version: 1.0')
+    expect(report).toContain('Input source: Financial Agent Evaluation Arena Seed')
     expect(report).toContain('Completed-review coverage: 4 / 20 (20.00%)')
     expect(report).toContain('| 1 | 豆包 | doubao | 1 | 92.00 |')
     expect(report).toContain('| 2 | 同花顺问财 | iwencai | 2 | 80.00 |')
