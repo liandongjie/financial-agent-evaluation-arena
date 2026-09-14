@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import CaseContextPanel from './components/CaseContextPanel.vue'
 import ModelVisibilityControl from './components/ModelVisibilityControl.vue'
 import ResponseReviewCard from './components/ResponseReviewCard.vue'
+import ReviewRecordsPanel from './components/ReviewRecordsPanel.vue'
 import { useEvaluationStore } from './stores/evaluation'
 
 const store = useEvaluationStore()
@@ -33,6 +34,15 @@ const selectedCaseId = computed({
       </label>
     </header>
 
+    <el-alert
+      v-if="store.persistenceWarning"
+      :title="store.persistenceWarning"
+      type="warning"
+      :closable="false"
+      show-icon
+      class="persistence-warning"
+    />
+
     <template v-if="store.currentCase">
       <CaseContextPanel :evaluation-case="store.currentCase" />
 
@@ -53,6 +63,8 @@ const selectedCaseId = computed({
         />
       </section>
     </template>
+
+    <ReviewRecordsPanel :workspace="store.workspace" />
   </main>
 </template>
 
@@ -97,6 +109,10 @@ h1 {
   gap: 1rem;
   overflow-x: auto;
   padding-bottom: 1rem;
+}
+
+.persistence-warning {
+  margin-bottom: 1.5rem;
 }
 
 @media (max-width: 900px) {

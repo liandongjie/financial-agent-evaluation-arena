@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 import { seedBundle } from '../data/seed'
 import { HumanReviewSchema } from '../domain/schemas'
@@ -8,6 +8,7 @@ import type {
   ModelId,
   ReviewScores,
 } from '../domain/schemas'
+import { loadWorkspace, saveWorkspace } from '../storage/workspaceStorage'
 
 export type ReviewDraft = Omit<HumanReview, 'reviewed_at'>
 
@@ -20,7 +21,9 @@ export const createEmptyReviewScores = (): ReviewScores => ({
 })
 
 export const useEvaluationStore = defineStore('evaluation', () => {
-  const workspace = ref<EvaluationBundle>(structuredClone(seedBundle))
+  const loaded = loadWorkspace(seedBundle)
+  const workspace = ref<EvaluationBundle>(loaded.workspace)
+  const persistenceWarning = ref(loaded.warning)
   const currentCaseId = ref(workspace.value.cases[0].case_id)
   const visibleModelIds = ref<ModelId[]>(workspace.value.models.map((model) => model.model_id))
 
@@ -80,17 +83,30 @@ export const useEvaluationStore = defineStore('evaluation', () => {
       }
     }
 
-    const index = workspace.value.reviews.findIndex(
+    const nextWorkspace = structuredClone(toRaw(workspace.value))
+    const index = nextWorkspace.reviews.findIndex(
       (review) => review.case_id === result.data.case_id && review.model_id === result.data.model_id,
     )
-    if (index >= 0) workspace.value.reviews.splice(index, 1, result.data)
-    else workspace.value.reviews.push(result.data)
+    if (index >= 0) nextWorkspace.reviews.splice(index, 1, result.data)
+    else nextWorkspace.reviews.push(result.data)
+
+    try {
+      saveWorkspace(nextWorkspace)
+    } catch {
+      return {
+        success: false as const,
+        error: '保存失败：浏览器无法写入本地数据，请检查存储权限或可用空间。',
+      }
+    }
+
+    workspace.value = nextWorkspace
 
     return { success: true as const, review: result.data }
   }
 
   return {
     workspace,
+    persistenceWarning,
     currentCaseId,
     visibleModelIds,
     currentCase,
