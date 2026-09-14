@@ -1,0 +1,296 @@
+{
+  "meta": {
+    "schema_version": "1.0",
+    "dataset_id": "financial-arena-seed-v1",
+    "dataset_name": "Financial Agent Evaluation Arena Seed",
+    "exported_at": "2026-01-15T00:00:00Z"
+  },
+  "models": [
+    { "model_id": "iwencai", "display_name": "同花顺问财" },
+    { "model_id": "doubao", "display_name": "豆包" },
+    { "model_id": "qwen", "display_name": "千问" },
+    { "model_id": "yuanbao", "display_name": "元宝" }
+  ],
+  "cases": [
+    {
+      "case_id": "case-revenue-margin",
+      "question": "截至 2025 年第三季度，星海科技前三季度营业收入同比增速和毛利率分别是多少？主要经营风险是什么？",
+      "reference_answer": "前三季度营业收入为 12.0 亿元，较上年同期 10.0 亿元增长 20%；毛利率为 30%。应提示核心元件涨价及单一大客户依赖风险。",
+      "reference_values": [
+        { "name": "营业收入同比增速", "value": 20, "unit": "%" },
+        { "name": "毛利率", "value": 30, "unit": "%" }
+      ],
+      "allowed_evidence": [
+        {
+          "evidence_id": "rev-q3-report",
+          "title": "星海科技 2025 年第三季度经营简报",
+          "source": "星海科技（模拟）",
+          "published_at": "2025-10-20T08:00:00Z",
+          "content": "2025 年前三季度营业收入 12.0 亿元，上年同期为 10.0 亿元；营业成本 8.4 亿元。公司预计核心元件采购价格仍可能波动。"
+        },
+        {
+          "evidence_id": "rev-risk-note",
+          "title": "星海科技客户集中度说明",
+          "source": "星海科技（模拟）",
+          "published_at": "2025-09-30T08:00:00Z",
+          "content": "报告期内第一大客户贡献营业收入的 42%，若主要客户削减订单，公司收入和产能利用率可能受到明显影响。"
+        }
+      ],
+      "cutoff_at": "2025-10-31T23:59:59Z",
+      "risk_labels": ["原材料价格波动", "客户集中度"]
+    },
+    {
+      "case_id": "case-liquidity",
+      "question": "北辰零售 2025 年半年末的流动比率与资产负债率是多少？这些指标能否证明公司没有短期偿债风险？",
+      "reference_answer": "流动比率为 1.5，资产负债率为 60%。流动比率高于 1 不等于没有短期偿债风险，还需关注 4.0 亿元存货的变现能力及 2.0 亿元受限现金。",
+      "reference_values": [
+        { "name": "流动比率", "value": 1.5, "unit": "" },
+        { "name": "资产负债率", "value": 60, "unit": "%" }
+      ],
+      "allowed_evidence": [
+        {
+          "evidence_id": "liq-balance-sheet",
+          "title": "北辰零售 2025 年半年度资产负债表摘要",
+          "source": "北辰零售（模拟）",
+          "published_at": "2025-08-18T08:00:00Z",
+          "content": "期末流动资产 9.0 亿元，流动负债 6.0 亿元；资产总额 20.0 亿元，负债总额 12.0 亿元。流动资产中存货为 4.0 亿元。"
+        },
+        {
+          "evidence_id": "liq-cash-note",
+          "title": "北辰零售货币资金附注",
+          "source": "北辰零售（模拟）",
+          "published_at": "2025-08-18T08:00:00Z",
+          "content": "期末货币资金 3.0 亿元，其中 2.0 亿元因借款质押受到使用限制。零售存货的实际变现价格受消费需求影响。"
+        }
+      ],
+      "cutoff_at": "2025-08-31T23:59:59Z",
+      "risk_labels": ["存货变现", "受限资金", "短期偿债"]
+    },
+    {
+      "case_id": "case-dividend-cutoff",
+      "question": "以 2025 年 4 月 30 日为信息截止日，云岭能源已公告的 2024 年度每股股息和按 4 月 30 日收盘价计算的股息率是多少？",
+      "reference_answer": "截止日已公告每股股息为 0.80 元，4 月 30 日收盘价为 20.00 元，对应股息率为 4.0%。5 月发布的调整方案属于截止日之后的信息，不应使用。",
+      "reference_values": [
+        { "name": "每股股息", "value": 0.8, "unit": "元/股" },
+        { "name": "股息率", "value": 4, "unit": "%" }
+      ],
+      "allowed_evidence": [
+        {
+          "evidence_id": "div-april-plan",
+          "title": "云岭能源 2024 年度利润分配预案",
+          "source": "云岭能源（模拟）",
+          "published_at": "2025-04-20T08:00:00Z",
+          "content": "董事会审议通过每 10 股派发现金股利 8.00 元（含税）的 2024 年度利润分配预案。2025 年 4 月 30 日股票收盘价为 20.00 元/股。"
+        },
+        {
+          "evidence_id": "div-may-revision",
+          "title": "云岭能源利润分配调整公告",
+          "source": "云岭能源（模拟）",
+          "published_at": "2025-05-12T08:00:00Z",
+          "content": "股东大会于 2025 年 5 月 12 日将派息方案调整为每 10 股派发现金股利 10.00 元（含税）。该公告晚于 2025 年 4 月 30 日信息截止日。"
+        }
+      ],
+      "cutoff_at": "2025-04-30T23:59:59Z",
+      "risk_labels": ["时间截点", "方案尚待审议"]
+    },
+    {
+      "case_id": "case-acquisition-causality",
+      "question": "远帆物流收购迅达仓储后，是否可以断言收购导致 2025 年上半年净利润增长？请基于材料给出审慎判断。",
+      "reference_answer": "不能断言。净利润同比增加 0.6 亿元，其中迅达仓储并表贡献 0.25 亿元，同时燃料成本下降贡献约 0.30 亿元，且整合费用增加 0.10 亿元；多项因素共同作用，现有材料不足以建立单一因果关系。",
+      "reference_values": [
+        { "name": "净利润同比增加额", "value": 0.6, "unit": "亿元" },
+        { "name": "并表利润贡献", "value": 0.25, "unit": "亿元" },
+        { "name": "燃料成本下降贡献", "value": 0.3, "unit": "亿元" }
+      ],
+      "allowed_evidence": [
+        {
+          "evidence_id": "acq-profit-bridge",
+          "title": "远帆物流 2025 年半年度利润变动说明",
+          "source": "远帆物流（模拟）",
+          "published_at": "2025-08-22T08:00:00Z",
+          "content": "2025 年上半年净利润 1.8 亿元，上年同期 1.2 亿元。迅达仓储自 3 月并表，贡献净利润 0.25 亿元；燃料采购价格下降贡献约 0.30 亿元。"
+        },
+        {
+          "evidence_id": "acq-integration-note",
+          "title": "远帆物流收购整合进展",
+          "source": "远帆物流（模拟）",
+          "published_at": "2025-08-22T08:00:00Z",
+          "content": "迅达仓储的系统迁移仍在进行，上半年确认整合费用 0.10 亿元。管理层表示协同目标存在执行不确定性，尚未完成独立因果评估。"
+        }
+      ],
+      "cutoff_at": "2025-08-31T23:59:59Z",
+      "risk_labels": ["因果归因", "并购整合"]
+    },
+    {
+      "case_id": "case-valuation-advice",
+      "question": "青岚医疗当前市盈率相对可比公司是否偏高？仅凭该比较是否足以给出买入或卖出建议？",
+      "reference_answer": "青岚医疗市盈率为 30 倍，高于三家可比公司的 20 倍中位数，估值相对偏高。但公司有 35% 的研发费用资本化比例、单一产品贡献 70% 收入等差异和风险，仅凭市盈率比较不足以给出买卖建议。",
+      "reference_values": [
+        { "name": "青岚医疗市盈率", "value": 30, "unit": "倍" },
+        { "name": "可比公司市盈率中位数", "value": 20, "unit": "倍" }
+      ],
+      "allowed_evidence": [
+        {
+          "evidence_id": "val-peer-table",
+          "title": "医疗设备可比公司估值表",
+          "source": "澄明研究（模拟）",
+          "published_at": "2025-11-10T08:00:00Z",
+          "content": "按同一口径计算，青岚医疗滚动市盈率为 30 倍；可比公司甲、乙、丙分别为 18 倍、20 倍、24 倍，中位数为 20 倍。该表不构成投资建议。"
+        },
+        {
+          "evidence_id": "val-risk-disclosure",
+          "title": "青岚医疗经营与会计估计说明",
+          "source": "青岚医疗（模拟）",
+          "published_at": "2025-10-28T08:00:00Z",
+          "content": "核心产品贡献公司收入的 70%。本期研发支出资本化比例为 35%，可比公司在产品结构和研发会计政策方面存在差异。"
+        }
+      ],
+      "cutoff_at": "2025-11-15T23:59:59Z",
+      "risk_labels": ["估值口径", "产品集中度", "投资建议合规"]
+    }
+  ],
+  "responses": [
+    {
+      "case_id": "case-revenue-margin",
+      "model_id": "iwencai",
+      "answer": "前三季度收入 12.0 亿元，较 10.0 亿元增长 20%；按收入减成本计算，毛利率为 30%。需关注核心元件价格波动。",
+      "citations": [{ "evidence_id": "rev-q3-report" }],
+      "generated_at": "2025-11-01T08:00:00Z",
+      "latency_ms": 820
+    },
+    {
+      "case_id": "case-revenue-margin",
+      "model_id": "doubao",
+      "answer": "营业收入同比增长约 20%，毛利率约 30%。经营端的主要不确定性是元件采购价格，同时客户较集中也可能放大订单波动。",
+      "citations": [{ "evidence_id": "rev-q3-report", "label": "经营简报" }, { "evidence_id": "rev-risk-note" }],
+      "generated_at": "2025-11-01T08:01:00Z"
+    },
+    {
+      "case_id": "case-revenue-margin",
+      "model_id": "qwen",
+      "answer": "收入从 10 亿元增至 12 亿元，因此同比增长 22%；毛利率为 30%。需关注核心元件价格波动以及第一大客户贡献收入 42% 的集中度风险。",
+      "citations": [{ "evidence_id": "rev-q3-report" }, { "evidence_id": "rev-risk-note" }],
+      "generated_at": "2025-11-01T08:02:00Z"
+    },
+    {
+      "case_id": "case-revenue-margin",
+      "model_id": "yuanbao",
+      "answer": "前三季度营业收入为 12.0 亿元，同比增长 20%；毛利率为 30%。材料提示采购价格存在波动风险。",
+      "citations": [{ "evidence_id": "rev-q3-report" }, { "evidence_id": "rev-audited-note", "label": "审计附注" }],
+      "generated_at": "2025-11-01T08:03:00Z"
+    },
+    {
+      "case_id": "case-liquidity",
+      "model_id": "iwencai",
+      "answer": "流动比率为 9/6=1.5，资产负债率为 12/20=60%。这不能证明不存在短期偿债风险，因为流动资产含 4 亿元存货，且 3 亿元货币资金中有 2 亿元受限。",
+      "citations": [{ "evidence_id": "liq-balance-sheet" }, { "evidence_id": "liq-cash-note" }],
+      "generated_at": "2025-09-01T08:00:00Z"
+    },
+    {
+      "case_id": "case-liquidity",
+      "model_id": "doubao",
+      "answer": "流动比率 1.5%，资产负债率 60%。流动比率虽然大于 1，但存货占用与受限资金意味着流动性仍需审慎观察，不能据此排除短期偿债压力。",
+      "citations": [{ "evidence_id": "liq-balance-sheet" }, { "evidence_id": "liq-cash-note" }],
+      "generated_at": "2025-09-01T08:01:00Z"
+    },
+    {
+      "case_id": "case-liquidity",
+      "model_id": "qwen",
+      "answer": "公司的流动比率为 1.5，资产负债率为 60%。流动资产虽高于流动负债，但存货变现能力和 2 亿元受限资金仍可能带来短期偿债压力。",
+      "citations": [{ "evidence_id": "liq-balance-sheet" }, { "evidence_id": "liq-cash-note" }],
+      "generated_at": "2025-09-01T08:02:00Z"
+    },
+    {
+      "case_id": "case-liquidity",
+      "model_id": "yuanbao",
+      "answer": "流动比率为 1.5，负债占总资产约 60%。指标表面尚可，但存货能否按账面金额变现未知；材料还显示多数货币资金受限，因此无法断言没有短期风险。",
+      "citations": [{ "evidence_id": "liq-balance-sheet" }, { "evidence_id": "liq-cash-note" }],
+      "generated_at": "2025-09-01T08:03:00Z"
+    },
+    {
+      "case_id": "case-dividend-cutoff",
+      "model_id": "iwencai",
+      "answer": "截止 4 月 30 日，已公告方案为每 10 股派 8 元，即每股 0.80 元；以 20 元收盘价计算，股息率为 4.0%。该方案当时仍需后续审议。",
+      "citations": [{ "evidence_id": "div-april-plan" }],
+      "generated_at": "2025-05-01T08:00:00Z"
+    },
+    {
+      "case_id": "case-dividend-cutoff",
+      "model_id": "doubao",
+      "answer": "在信息截止日可用的 4 月公告中，每股股息是 0.8 元，除以 4 月 30 日股价 20 元，得到 4% 股息率。5 月调整不应倒推用于本题。",
+      "citations": [{ "evidence_id": "div-april-plan", "label": "4 月预案" }],
+      "generated_at": "2025-05-01T08:01:00Z"
+    },
+    {
+      "case_id": "case-dividend-cutoff",
+      "model_id": "qwen",
+      "answer": "公司最终每 10 股派 10 元，即每股 1 元；按 20 元股价计算股息率为 5%。",
+      "citations": [{ "evidence_id": "div-may-revision", "label": "调整公告" }],
+      "generated_at": "2025-05-13T08:02:00Z"
+    },
+    {
+      "case_id": "case-dividend-cutoff",
+      "model_id": "yuanbao",
+      "answer": "每股股息 0.80 元，股息率 4.0%。计算采用截止日已公开的每 10 股派 8 元预案和 20 元收盘价，未采用 5 月信息。",
+      "citations": [{ "evidence_id": "div-april-plan" }],
+      "generated_at": "2025-05-01T08:03:00Z"
+    },
+    {
+      "case_id": "case-acquisition-causality",
+      "model_id": "iwencai",
+      "answer": "净利润同比增加 0.6 亿元，但并表贡献仅 0.25 亿元，燃料成本下降另贡献约 0.30 亿元，且发生 0.10 亿元整合费用。材料支持收购有贡献，不支持将全部增长归因于收购。",
+      "citations": [{ "evidence_id": "acq-profit-bridge" }, { "evidence_id": "acq-integration-note" }],
+      "generated_at": "2025-09-01T09:00:00Z"
+    },
+    {
+      "case_id": "case-acquisition-causality",
+      "model_id": "doubao",
+      "answer": "并表利润贡献 0.25 亿元，燃料成本下降贡献约 0.30 亿元，另有 0.10 亿元整合费用。尽管存在这些其他因素，收购仍是净利润从 1.2 亿元增至 1.8 亿元的决定性原因。",
+      "citations": [{ "evidence_id": "acq-profit-bridge" }, { "evidence_id": "acq-integration-note" }],
+      "generated_at": "2025-09-01T09:01:00Z"
+    },
+    {
+      "case_id": "case-acquisition-causality",
+      "model_id": "qwen",
+      "answer": "净利润同比增加 0.6 亿元，其中收购标的并表贡献 0.25 亿元，燃料成本下降也贡献约 0.30 亿元，整合费用则增加 0.10 亿元。因此收购是影响因素之一，但不能据此断言它单独导致了利润增长。",
+      "citations": [{ "evidence_id": "acq-profit-bridge" }, { "evidence_id": "acq-integration-note" }],
+      "generated_at": "2025-09-01T09:02:00Z"
+    },
+    {
+      "case_id": "case-acquisition-causality",
+      "model_id": "yuanbao",
+      "answer": "收购标的贡献了 0.25 亿元利润，但总增量为 0.6 亿元。燃料价格下降也有约 0.30 亿元贡献，整合则产生费用，因此只能说收购是因素之一。",
+      "citations": [{ "evidence_id": "acq-profit-bridge" }, { "evidence_id": "acq-integration-note" }],
+      "generated_at": "2025-09-01T09:03:00Z"
+    },
+    {
+      "case_id": "case-valuation-advice",
+      "model_id": "iwencai",
+      "answer": "青岚医疗 30 倍市盈率高于可比公司 20 倍中位数，可称相对偏高。但产品集中度及研发资本化口径影响可比性，仅凭这一组倍数不足以形成买卖建议。",
+      "citations": [{ "evidence_id": "val-peer-table" }, { "evidence_id": "val-risk-disclosure" }],
+      "generated_at": "2025-11-16T08:00:00Z"
+    },
+    {
+      "case_id": "case-valuation-advice",
+      "model_id": "doubao",
+      "answer": "与样本中位数相比，公司市盈率高出 10 倍、约 50%，表明相对估值较高。这只是单一指标，业务结构和会计政策差异尚未调整，不能直接据此建议交易。",
+      "citations": [{ "evidence_id": "val-peer-table" }, { "evidence_id": "val-risk-disclosure" }],
+      "generated_at": "2025-11-16T08:01:00Z"
+    },
+    {
+      "case_id": "case-valuation-advice",
+      "model_id": "qwen",
+      "answer": "青岚医疗 30 倍市盈率明显高于同行中位数 20 倍，股票被高估，应立即卖出以规避回调。",
+      "citations": [{ "evidence_id": "val-peer-table" }],
+      "generated_at": "2025-11-16T08:02:00Z"
+    },
+    {
+      "case_id": "case-valuation-advice",
+      "model_id": "yuanbao",
+      "answer": "30 倍高于可比中位数 20 倍，静态比较下偏高。不过核心产品收入占比 70%，研发资本化比例 35%，这些差异既带来风险也削弱简单横比的充分性，材料不足以支持买卖结论。",
+      "citations": [{ "evidence_id": "val-peer-table" }, { "evidence_id": "val-risk-disclosure" }],
+      "generated_at": "2025-11-16T08:03:00Z"
+    }
+  ],
+  "reviews": []
+}
