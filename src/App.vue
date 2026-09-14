@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import AnalyticsPanel from './components/AnalyticsPanel.vue'
 import CaseContextPanel from './components/CaseContextPanel.vue'
 import ModelVisibilityControl from './components/ModelVisibilityControl.vue'
+import ReportPanel from './components/ReportPanel.vue'
 import ResponseReviewCard from './components/ResponseReviewCard.vue'
 import ReviewRecordsPanel from './components/ReviewRecordsPanel.vue'
 import { useEvaluationStore } from './stores/evaluation'
@@ -65,6 +67,8 @@ const selectedCaseId = computed({
     </template>
 
     <ReviewRecordsPanel :workspace="store.workspace" />
+    <AnalyticsPanel :workspace="store.workspace" />
+    <ReportPanel :workspace="store.workspace" />
   </main>
 </template>
 
