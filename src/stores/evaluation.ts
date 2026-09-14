@@ -8,7 +8,7 @@ import type {
   ModelId,
   ReviewScores,
 } from '../domain/schemas'
-import { loadWorkspace, saveWorkspace } from '../storage/workspaceStorage'
+import { clearWorkspace, loadWorkspace, saveWorkspace } from '../storage/workspaceStorage'
 
 export type ReviewDraft = Omit<HumanReview, 'reviewed_at'>
 
@@ -24,7 +24,7 @@ export const useEvaluationStore = defineStore('evaluation', () => {
   const loaded = loadWorkspace(seedBundle)
   const workspace = ref<EvaluationBundle>(loaded.workspace)
   const persistenceWarning = ref(loaded.warning)
-  const currentCaseId = ref(workspace.value.cases[0].case_id)
+  const currentCaseId = ref(workspace.value.cases[0]?.case_id ?? '')
   const visibleModelIds = ref<ModelId[]>(workspace.value.models.map((model) => model.model_id))
 
   const currentCase = computed(() =>
@@ -104,6 +104,42 @@ export const useEvaluationStore = defineStore('evaluation', () => {
     return { success: true as const, review: result.data }
   }
 
+  function replaceWorkspace(imported: EvaluationBundle) {
+    const nextWorkspace = structuredClone(toRaw(imported))
+    try {
+      saveWorkspace(nextWorkspace)
+    } catch {
+      return {
+        success: false as const,
+        error: '导入失败：浏览器无法保存数据，当前评测数据未更改。',
+      }
+    }
+
+    workspace.value = nextWorkspace
+    currentCaseId.value = nextWorkspace.cases[0]?.case_id ?? ''
+    visibleModelIds.value = nextWorkspace.models.map((model) => model.model_id)
+    persistenceWarning.value = ''
+    return { success: true as const }
+  }
+
+  function resetWorkspace() {
+    try {
+      clearWorkspace()
+    } catch {
+      return {
+        success: false as const,
+        error: '重置失败：浏览器无法清除保存的数据，当前评测数据未更改。',
+      }
+    }
+
+    const restored = structuredClone(seedBundle)
+    workspace.value = restored
+    currentCaseId.value = restored.cases[0]?.case_id ?? ''
+    visibleModelIds.value = restored.models.map((model) => model.model_id)
+    persistenceWarning.value = ''
+    return { success: true as const }
+  }
+
   return {
     workspace,
     persistenceWarning,
@@ -116,5 +152,7 @@ export const useEvaluationStore = defineStore('evaluation', () => {
     toggleModelVisibility,
     reviewFor,
     saveReview,
+    replaceWorkspace,
+    resetWorkspace,
   }
 })

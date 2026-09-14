@@ -179,4 +179,104 @@ describe('evaluation store', () => {
     })
     expect(store.workspace.reviews).toEqual([])
   })
+
+  it('atomically replaces rather than merges and resets transient state', () => {
+    const store = useEvaluationStore()
+    store.saveReview(reviewingDraft())
+    store.setCurrentCase('case-liquidity')
+    store.toggleModelVisibility('iwencai')
+    const imported = structuredClone(seedBundle)
+    imported.meta.dataset_name = 'Imported evaluation bundle'
+
+    expect(store.replaceWorkspace(imported)).toEqual({ success: true })
+    expect(store.workspace).toEqual(imported)
+    expect(store.workspace.reviews).toEqual([])
+    expect(store.currentCaseId).toBe(imported.cases[0].case_id)
+    expect(store.visibleModelIds).toEqual(imported.models.map((model) => model.model_id))
+    expect(JSON.parse(localStorage.getItem(WORKSPACE_STORAGE_KEY)!)).toEqual(imported)
+  })
+
+  it('restores an imported workspace in a fresh store', () => {
+    const storeA = useEvaluationStore()
+    const imported = structuredClone(seedBundle)
+    imported.meta.dataset_name = 'Imported evaluation bundle'
+    imported.reviews.push({
+      ...reviewingDraft(),
+      reviewed_at: '2026-09-14T08:30:00.000Z',
+    })
+    expect(storeA.replaceWorkspace(imported)).toEqual({ success: true })
+
+    setActivePinia(createPinia())
+    const storeB = useEvaluationStore()
+
+    expect(storeB.workspace).toEqual(imported)
+  })
+
+  it('keeps memory unchanged when imported workspace persistence fails', () => {
+    const store = useEvaluationStore()
+    const before = JSON.parse(JSON.stringify(store.workspace))
+    const imported = structuredClone(seedBundle)
+    imported.meta.dataset_name = 'Imported evaluation bundle'
+    storage.setItem.mockImplementationOnce(() => {
+      throw new Error('quota exceeded')
+    })
+
+    expect(store.replaceWorkspace(imported)).toEqual({
+      success: false,
+      error: '导入失败：浏览器无法保存数据，当前评测数据未更改。',
+    })
+    expect(store.workspace).toEqual(before)
+    expect(localStorage.getItem(WORKSPACE_STORAGE_KEY)).toBeNull()
+  })
+
+  it('resets exactly to seed, clears storage, and remains reset after refresh', () => {
+    const storeA = useEvaluationStore()
+    storeA.saveReview(reviewingDraft())
+    storeA.setCurrentCase('case-liquidity')
+    storeA.toggleModelVisibility('iwencai')
+
+    expect(storeA.resetWorkspace()).toEqual({ success: true })
+    expect(storeA.workspace).toEqual(seedBundle)
+    expect(storeA.workspace).not.toBe(seedBundle)
+    expect(storeA.currentCaseId).toBe(seedBundle.cases[0].case_id)
+    expect(storeA.visibleModelIds).toEqual(seedBundle.models.map((model) => model.model_id))
+    expect(localStorage.getItem(WORKSPACE_STORAGE_KEY)).toBeNull()
+
+    setActivePinia(createPinia())
+    expect(useEvaluationStore().workspace).toEqual(seedBundle)
+  })
+
+  it('keeps memory unchanged when reset storage clearing fails', () => {
+    const store = useEvaluationStore()
+    store.saveReview(reviewingDraft())
+    const before = JSON.parse(JSON.stringify(store.workspace))
+    storage.removeItem.mockImplementationOnce(() => {
+      throw new Error('storage unavailable')
+    })
+
+    expect(store.resetWorkspace()).toEqual({
+      success: false,
+      error: '重置失败：浏览器无法清除保存的数据，当前评测数据未更改。',
+    })
+    expect(store.workspace).toEqual(before)
+    expect(JSON.parse(localStorage.getItem(WORKSPACE_STORAGE_KEY)!)).toEqual(before)
+  })
+
+  it('supports an empty valid imported bundle without invalid transient state', () => {
+    const storeA = useEvaluationStore()
+    const empty = structuredClone(seedBundle)
+    empty.models = []
+    empty.cases = []
+    empty.responses = []
+    empty.reviews = []
+
+    expect(storeA.replaceWorkspace(empty)).toEqual({ success: true })
+    expect(storeA.currentCaseId).toBe('')
+    expect(storeA.visibleModelIds).toEqual([])
+
+    setActivePinia(createPinia())
+    const storeB = useEvaluationStore()
+    expect(storeB.workspace).toEqual(empty)
+    expect(storeB.currentCaseId).toBe('')
+  })
 })

@@ -26,3 +26,7 @@ export function loadWorkspace(fallback: EvaluationBundle): {
 export function saveWorkspace(workspace: EvaluationBundle) {
   localStorage.setItem(WORKSPACE_STORAGE_KEY, JSON.stringify(workspace))
 }
+
+export function clearWorkspace() {
+  localStorage.removeItem(WORKSPACE_STORAGE_KEY)
+}

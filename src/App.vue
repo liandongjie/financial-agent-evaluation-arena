@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import AnalyticsPanel from './components/AnalyticsPanel.vue'
 import CaseContextPanel from './components/CaseContextPanel.vue'
+import DataPanel from './components/DataPanel.vue'
 import ModelVisibilityControl from './components/ModelVisibilityControl.vue'
 import ReportPanel from './components/ReportPanel.vue'
 import ResponseReviewCard from './components/ResponseReviewCard.vue'
@@ -69,6 +70,7 @@ const selectedCaseId = computed({
     <ReviewRecordsPanel :workspace="store.workspace" />
     <AnalyticsPanel :workspace="store.workspace" />
     <ReportPanel :workspace="store.workspace" />
+    <DataPanel />
   </main>
 </template>
 
