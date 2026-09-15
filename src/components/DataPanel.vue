@@ -8,6 +8,10 @@ const store = useEvaluationStore()
 const fileInput = ref<HTMLInputElement>()
 const feedback = ref('')
 const feedbackType = ref<'success' | 'error' | 'info'>('info')
+const displayDatasetName = (name: string) =>
+  name === 'Financial Agent Evaluation Arena Seed'
+    ? 'Financial Agent Evaluation Arena 初始数据'
+    : name
 
 function exportJson() {
   const json = exportBundleJson(toRaw(store.workspace))
@@ -43,7 +47,7 @@ async function importJson(event: Event) {
   const bundle = parsed.bundle
   try {
     await ElMessageBox.confirm(
-      `导入将替换当前全部评测数据。\n${bundle.meta.dataset_name}：${bundle.cases.length} Cases / ${bundle.models.length} Models / ${bundle.responses.length} Responses / ${bundle.reviews.length} Reviews`,
+      `导入将替换当前全部评测数据。\n${displayDatasetName(bundle.meta.dataset_name)}：${bundle.cases.length} 个评测样例 / ${bundle.models.length} 个模型 / ${bundle.responses.length} 条模型回答 / ${bundle.reviews.length} 条评审记录`,
       '确认导入',
       { confirmButtonText: '确认替换', cancelButtonText: '取消', type: 'warning' },
     )
@@ -59,7 +63,7 @@ async function importJson(event: Event) {
 async function resetToSeed() {
   try {
     await ElMessageBox.confirm(
-      '当前保存的评审和导入数据将被清除，并恢复内置 Seed。',
+      '当前保存的评审和导入数据将被清除，并恢复系统初始数据。',
       '确认重置',
       { confirmButtonText: '确认重置', cancelButtonText: '取消', type: 'warning' },
     )
@@ -69,7 +73,7 @@ async function resetToSeed() {
   }
 
   const result = store.resetWorkspace()
-  showFeedback(result.success ? '已恢复内置 Seed。' : result.error, result.success ? 'success' : 'error')
+  showFeedback(result.success ? '已恢复系统初始数据。' : result.error, result.success ? 'success' : 'error')
 }
 
 function showFeedback(message: string, type: 'success' | 'error' | 'info') {
@@ -79,27 +83,26 @@ function showFeedback(message: string, type: 'success' | 'error' | 'info') {
 </script>
 
 <template>
-  <section class="data-panel" aria-label="Data Management">
+  <section class="data-panel" aria-label="数据管理">
     <div class="data-panel__heading">
       <div>
-        <p class="eyebrow">Data</p>
-        <h2>评测数据</h2>
+        <h2>数据管理</h2>
       </div>
       <div class="data-panel__actions">
         <el-button @click="exportJson">导出 JSON</el-button>
         <el-button @click="fileInput?.click()">导入 JSON</el-button>
-        <el-button type="danger" plain @click="resetToSeed">恢复内置 Seed</el-button>
+        <el-button type="danger" plain @click="resetToSeed">恢复初始数据</el-button>
         <input ref="fileInput" type="file" accept="application/json,.json" @change="importJson">
       </div>
     </div>
 
     <dl class="summary">
-      <div><dt>Dataset</dt><dd>{{ store.workspace.meta.dataset_name }}</dd></div>
-      <div><dt>Schema</dt><dd>{{ store.workspace.meta.schema_version }}</dd></div>
-      <div><dt>Cases</dt><dd>{{ store.workspace.cases.length }}</dd></div>
-      <div><dt>Models</dt><dd>{{ store.workspace.models.length }}</dd></div>
-      <div><dt>Responses</dt><dd>{{ store.workspace.responses.length }}</dd></div>
-      <div><dt>Reviews</dt><dd>{{ store.workspace.reviews.length }}</dd></div>
+      <div><dt>数据集</dt><dd>{{ displayDatasetName(store.workspace.meta.dataset_name) }}</dd></div>
+      <div><dt>数据版本</dt><dd>{{ store.workspace.meta.schema_version }}</dd></div>
+      <div><dt>评测样例</dt><dd>{{ store.workspace.cases.length }}</dd></div>
+      <div><dt>模型</dt><dd>{{ store.workspace.models.length }}</dd></div>
+      <div><dt>模型回答</dt><dd>{{ store.workspace.responses.length }}</dd></div>
+      <div><dt>评审记录</dt><dd>{{ store.workspace.reviews.length }}</dd></div>
     </dl>
 
     <el-alert v-if="feedback" :title="feedback" :type="feedbackType" :closable="false" show-icon />
@@ -110,7 +113,6 @@ function showFeedback(message: string, type: 'success' | 'error' | 'info') {
 .data-panel {
   display: grid;
   gap: 1rem;
-  margin-top: 1.5rem;
   padding: 1.25rem;
   border: 1px solid #dfe5ed;
   border-radius: 8px;

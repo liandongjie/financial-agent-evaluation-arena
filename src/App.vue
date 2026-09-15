@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import AnalyticsPanel from './components/AnalyticsPanel.vue'
 import CaseContextPanel from './components/CaseContextPanel.vue'
 import DataPanel from './components/DataPanel.vue'
 import ModelVisibilityControl from './components/ModelVisibilityControl.vue'
-import ReportPanel from './components/ReportPanel.vue'
 import ResponseReviewCard from './components/ResponseReviewCard.vue'
 import ReviewRecordsPanel from './components/ReviewRecordsPanel.vue'
 import { useEvaluationStore } from './stores/evaluation'
 
 const store = useEvaluationStore()
+const activeSection = ref('review')
 
 const selectedCaseId = computed({
   get: () => store.currentCaseId,
@@ -20,21 +20,8 @@ const selectedCaseId = computed({
 <template>
   <main class="workspace">
     <header class="workspace__header">
-      <div>
-        <p class="eyebrow">Human Review Workspace</p>
-        <h1>Financial Agent Evaluation Arena</h1>
-      </div>
-      <label class="case-picker">
-        <span>选择评测 Case</span>
-        <el-select v-model="selectedCaseId" aria-label="选择评测 Case">
-          <el-option
-            v-for="evaluationCase in store.workspace.cases"
-            :key="evaluationCase.case_id"
-            :label="evaluationCase.question"
-            :value="evaluationCase.case_id"
-          />
-        </el-select>
-      </label>
+      <h1>Financial Agent Evaluation Arena</h1>
+      <p>金融 Agent 人工评测工作台</p>
     </header>
 
     <el-alert
@@ -46,31 +33,55 @@ const selectedCaseId = computed({
       class="persistence-warning"
     />
 
-    <template v-if="store.currentCase">
-      <CaseContextPanel :evaluation-case="store.currentCase" />
+    <el-tabs v-model="activeSection" class="workspace-tabs">
+      <el-tab-pane label="评审" name="review">
+        <div class="review-toolbar">
+          <div>
+            <h2>评审工作区</h2>
+            <p>对照参考上下文，并排完成人工评审。</p>
+          </div>
+          <label class="case-picker">
+            <span>选择评测样例</span>
+            <el-select v-model="selectedCaseId" aria-label="选择评测样例">
+              <el-option
+                v-for="evaluationCase in store.workspace.cases"
+                :key="evaluationCase.case_id"
+                :label="evaluationCase.question"
+                :value="evaluationCase.case_id"
+              />
+            </el-select>
+          </label>
+        </div>
 
-      <ModelVisibilityControl
-        :models="store.workspace.models"
-        :visible-model-ids="store.visibleModelIds"
-        @toggle="store.toggleModelVisibility"
-      />
-
-      <section class="comparison" aria-label="模型回答比较">
-        <ResponseReviewCard
-          v-for="item in store.visibleComparisons"
-          :key="`${item.response.case_id}-${item.model.model_id}`"
-          :evaluation-case="store.currentCase"
-          :model="item.model"
-          :response="item.response"
-          :review="store.reviewFor(item.response.case_id, item.model.model_id)"
-        />
-      </section>
-    </template>
-
-    <ReviewRecordsPanel :workspace="store.workspace" />
-    <AnalyticsPanel :workspace="store.workspace" />
-    <ReportPanel :workspace="store.workspace" />
-    <DataPanel />
+        <template v-if="store.currentCase">
+          <CaseContextPanel :evaluation-case="store.currentCase" />
+          <ModelVisibilityControl
+            :models="store.workspace.models"
+            :visible-model-ids="store.visibleModelIds"
+            @toggle="store.toggleModelVisibility"
+          />
+          <section class="comparison" aria-label="模型回答比较">
+            <ResponseReviewCard
+              v-for="item in store.visibleComparisons"
+              :key="`${item.response.case_id}-${item.model.model_id}`"
+              :evaluation-case="store.currentCase"
+              :model="item.model"
+              :response="item.response"
+              :review="store.reviewFor(item.response.case_id, item.model.model_id)"
+            />
+          </section>
+        </template>
+      </el-tab-pane>
+      <el-tab-pane label="评审记录" name="records">
+        <ReviewRecordsPanel :workspace="store.workspace" />
+      </el-tab-pane>
+      <el-tab-pane label="评测分析" name="analytics">
+        <AnalyticsPanel :workspace="store.workspace" />
+      </el-tab-pane>
+      <el-tab-pane label="数据管理" name="data">
+        <DataPanel />
+      </el-tab-pane>
+    </el-tabs>
   </main>
 </template>
 
@@ -78,26 +89,50 @@ const selectedCaseId = computed({
 .workspace {
   max-width: 1600px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1.25rem 2rem 2rem;
 }
 
 .workspace__header {
+  margin-bottom: 0.75rem;
+}
+
+.workspace__header h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+}
+
+.workspace__header p {
+  margin: 0.25rem 0 0;
+  color: #526071;
+  font-size: 0.95rem;
+}
+
+.workspace-tabs :deep(.el-tabs__header) {
+  margin-bottom: 1rem;
+}
+
+.workspace-tabs :deep(.el-tabs__item) {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.review-toolbar {
   display: flex;
   align-items: end;
   justify-content: space-between;
   gap: 2rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.eyebrow {
-  margin: 0 0 0.35rem;
-  color: #177245;
-  font-weight: 700;
-}
-
-h1 {
+.review-toolbar h2,
+.review-toolbar p {
   margin: 0;
-  font-size: clamp(1.8rem, 4vw, 3rem);
+}
+
+.review-toolbar p {
+  margin-top: 0.25rem;
+  color: #7a8594;
+  font-size: 0.875rem;
 }
 
 .case-picker {
@@ -122,9 +157,10 @@ h1 {
 }
 
 @media (max-width: 900px) {
-  .workspace__header {
+  .review-toolbar {
     align-items: stretch;
     flex-direction: column;
+    gap: 0.75rem;
   }
 
   .case-picker {

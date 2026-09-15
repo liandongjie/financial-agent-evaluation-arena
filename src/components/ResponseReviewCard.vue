@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
-import { FAILURE_TAGS, REVIEW_STATUSES } from '../domain/constants'
+import {
+  FAILURE_TAG_LABELS,
+  FAILURE_TAGS,
+  REVIEW_STATUS_LABELS,
+  REVIEW_STATUSES,
+  SCORE_DIMENSION_LABELS,
+} from '../domain/constants'
 import type {
   EvaluationCase,
   FailureTag,
@@ -28,28 +34,12 @@ const feedback = ref('')
 const feedbackType = ref<'success' | 'error'>('success')
 
 const dimensions: { key: keyof ReviewScores; label: string }[] = [
-  { key: 'numeric_accuracy', label: '数字正确性' },
-  { key: 'evidence_quality', label: '引用与证据' },
-  { key: 'freshness', label: '数据时效性' },
-  { key: 'safety_compliance', label: '安全合规' },
-  { key: 'answer_quality', label: '回答质量' },
+  { key: 'numeric_accuracy', label: SCORE_DIMENSION_LABELS.numeric_accuracy },
+  { key: 'evidence_quality', label: SCORE_DIMENSION_LABELS.evidence_quality },
+  { key: 'freshness', label: SCORE_DIMENSION_LABELS.freshness },
+  { key: 'safety_compliance', label: SCORE_DIMENSION_LABELS.safety_compliance },
+  { key: 'answer_quality', label: SCORE_DIMENSION_LABELS.answer_quality },
 ]
-
-const failureTagLabels: Record<FailureTag, string> = {
-  numeric_error: '数字错误',
-  unit_error: '单位错误',
-  invalid_citation: '引用无效',
-  future_data: '使用未来数据',
-  missed_risk: '风险漏报',
-  unsupported_trading_advice: '无依据买卖建议',
-  improper_causality: '因果关系表述不当',
-}
-
-const statusLabels: Record<ReviewStatus, string> = {
-  unreviewed: '未评审',
-  reviewing: '评审中',
-  completed: '已完成',
-}
 
 function citationMatches(evidenceId: string) {
   return props.evaluationCase.allowed_evidence.some(
@@ -127,10 +117,10 @@ function save() {
         </div>
       </div>
 
-      <label class="field-label">Failure Tags</label>
+      <label class="field-label">问题标签</label>
       <el-checkbox-group v-model="failureTags" class="failure-tags">
         <el-checkbox v-for="tag in FAILURE_TAGS" :key="tag" :value="tag">
-          {{ failureTagLabels[tag] }}
+          {{ FAILURE_TAG_LABELS[tag] }}
         </el-checkbox>
       </el-checkbox-group>
 
@@ -148,7 +138,7 @@ function save() {
         <el-option
           v-for="reviewStatus in REVIEW_STATUSES"
           :key="reviewStatus"
-          :label="statusLabels[reviewStatus]"
+          :label="REVIEW_STATUS_LABELS[reviewStatus]"
           :value="reviewStatus"
         />
       </el-select>
@@ -171,6 +161,14 @@ function save() {
   min-width: 0;
 }
 
+.review-card :deep(.el-card__header) {
+  padding: 0.75rem 1rem;
+}
+
+.review-card :deep(.el-card__body) {
+  padding: 1rem;
+}
+
 .review-card__title {
   display: flex;
   align-items: center;
@@ -184,11 +182,11 @@ h2 {
 }
 
 .response-copy {
-  min-height: 12rem;
+  min-height: 10rem;
 }
 
 .response-copy p {
-  line-height: 1.65;
+  line-height: 1.55;
 }
 
 .response-time,
@@ -199,8 +197,8 @@ h2 {
 
 .citations {
   display: grid;
-  gap: 0.5rem;
-  min-height: 4.5rem;
+  gap: 0.35rem;
+  min-height: 4rem;
   margin: 0;
   padding-left: 1.1rem;
 }
@@ -211,7 +209,7 @@ h2 {
 
 .review-form {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.6rem;
 }
 
 .score-row {
@@ -238,6 +236,8 @@ h2 {
 }
 
 .failure-tags .el-checkbox {
+  height: auto;
+  line-height: 1.35;
   margin-right: 0;
 }
 

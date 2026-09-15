@@ -36,7 +36,7 @@ function isVisible(modelId: ModelId) {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 1rem 0;
+  margin: 0.75rem 0;
 }
 
 .visibility strong {
@@ -46,5 +46,18 @@ function isVisible(modelId: ModelId) {
 .visibility__hint {
   color: #7a8594;
   font-size: 0.8rem;
+}
+
+.visibility :deep(.el-checkbox-button__inner) {
+  padding: 6px 12px;
+  border-color: #dfe5ed;
+  box-shadow: none;
+}
+
+.visibility :deep(.el-checkbox-button.is-checked .el-checkbox-button__inner) {
+  color: #2563a9;
+  border-color: #8bb8e8;
+  background: #edf5fd;
+  box-shadow: none;
 }
 </style>

@@ -16,43 +16,7 @@ function downloadReport() {
 </script>
 
 <template>
-  <section class="report" aria-label="Markdown Report">
-    <div>
-      <p class="eyebrow">Report</p>
-      <h2>Markdown 报告</h2>
-      <p>报告与 Analytics 使用同一份 completed-only 统计结果。</p>
-    </div>
-    <el-button type="primary" @click="downloadReport">生成并下载 Markdown 报告</el-button>
-  </section>
+  <el-button type="primary" aria-label="生成并下载 Markdown 报告" @click="downloadReport">
+    生成并下载 Markdown 报告
+  </el-button>
 </template>
-
-<style scoped>
-.report {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  padding: 1.25rem;
-  border: 1px solid #dfe5ed;
-  border-radius: 8px;
-  background: #fff;
-}
-
-.report h2,
-.report p {
-  margin: 0;
-}
-
-.report div > p:last-child {
-  margin-top: 0.4rem;
-  color: #7a8594;
-}
-
-@media (max-width: 700px) {
-  .report {
-    align-items: stretch;
-    flex-direction: column;
-  }
-}
-</style>
